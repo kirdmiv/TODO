@@ -14,16 +14,24 @@ class AddNoteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
 
-        //noteEt.text = SpannableStringBuilder(intent.getStringExtra("note_msg"))
+        if (intent.extras != null && intent.extras!!.containsKey(NoteHolder.MSG_KEY))
+            noteEt.text = SpannableStringBuilder(intent.getStringExtra(NoteHolder.MSG_KEY))
 
         submitBtn.setOnClickListener {
             val note_msg = noteEt.text.toString()
             if (note_msg.isNotBlank()){
+                val pos = intent.getIntExtra(NoteHolder.POS_KEY, 0)
                 val intent = Intent()
-                intent.putExtra("msg", note_msg.trim())
+                intent.putExtra(MSG_KEY, note_msg.trim())
+                intent.putExtra(POS_KEY, pos)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
         }
+    }
+
+    companion object {
+        val MSG_KEY = "MSG_KEY"
+        val POS_KEY = "POS_KEY"
     }
 }

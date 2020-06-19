@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import java.io.File
 import java.io.InputStream
+import kotlin.collections.emptyList as emptyList
 
 class Note(
     var msg: String,
@@ -14,7 +15,7 @@ class Note(
 ) {
 
     companion object {
-        fun saveNotes(context: Context, notes: List<Note>, fileName: String = "notes.json") {
+        fun saveNotes(context: Context, notes: MutableList<Note>, fileName: String = "notes.json") {
             val path = context.filesDir
             val file = File(path, fileName)
 
@@ -27,7 +28,7 @@ class Note(
             Log.d("SAVED NOTES", jsonNotesListPretty)
         }
 
-        fun getNotes(context: Context, fileName: String = "notes.json") : List<Note> {
+        fun getNotes(context: Context, fileName: String = "notes.json") : MutableList<Note> {
             var json: String = ""
             try {
                 val  inputStream: InputStream = File(context.filesDir, fileName).inputStream()
@@ -35,11 +36,11 @@ class Note(
             } catch (ex: Exception) {
                 Log.d("EX", "sad")
                 ex.printStackTrace()
-                return emptyList()
+                return mutableListOf()
             }
             Log.d("DATA GOT FROM JSON", json)
             val jsonArray = Gson().fromJson(json, JsonArray::class.java)
-            return jsonArray.map { it.toString() }.map { Gson().fromJson(it, Note::class.java) }
+            return jsonArray.map { it.toString() }.map { Gson().fromJson(it, Note::class.java) }.toMutableList()
         }
     }
 }

@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_main.*
@@ -15,8 +17,11 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    var notes: List<Note> = emptyList()
-    val noteAdapter = NoteAdapter(notes, this)
+    var notes: MutableList<Note> = mutableListOf()
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var noteAdapter: NoteAdapter
+    private val lastVisibleItemPosition: Int
+        get() = linearLayoutManager.findLastVisibleItemPosition()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,18 +37,11 @@ class MainActivity : AppCompatActivity() {
 
         notes = Note.getNotes(this)
         Log.d("NOTES", notes.size.toString())
-        for (note in notes) noteAdapter.add(note)
 
+        noteAdapter = NoteAdapter(notes)
+        linearLayoutManager = LinearLayoutManager(this)
+        notesLv.layoutManager = linearLayoutManager
         notesLv.adapter = noteAdapter
-        notesLv.setOnItemClickListener(object: AdapterView.OnItemClickListener {
-            override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                Log.d("clicked", p2.toString())
-                val intent: Intent = Intent(applicationContext, AddNoteActivity::class.java)
-                intent.putExtra("note_msg", notes[p2].msg)
-                intent.putExtra("completed", notes[p2].completed)
-                startActivityForResult(intent, 2)
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -67,10 +65,21 @@ class MainActivity : AppCompatActivity() {
         if (data == null) return
         Log.d("request code", requestCode.toString())
         Log.d("result code", resultCode.toString())
-        val noteMsg = data.getStringExtra("msg") ?: return
-        notes = notes.plus(Note(noteMsg, false))
-        noteAdapter.add(notes[notes.lastIndex])
-        Log.d("NOTE ADDED", noteMsg)
+        val noteMsg = data.getStringExtra(AddNoteActivity.MSG_KEY) ?: return
+        if (requestCode == 1) {
+            runOnUiThread {
+                notes.add(Note(noteMsg, false))
+                noteAdapter.notifyItemInserted(notes.lastIndex)
+            }
+            Log.d("NOTE ADDED", noteMsg)
+        } else if (requestCode == 2){
+            val pos: Int = data.getIntExtra(AddNoteActivity.POS_KEY, 0)
+            runOnUiThread {
+                notes[pos].msg = noteMsg
+                noteAdapter.notifyItemChanged(pos)
+            }
+            Log.d("NOTE CHANGED", pos.toString())
+        }
     }
 
     override fun onDestroy() {
