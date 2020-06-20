@@ -1,2 +1,2 @@
 # TODO
-TODO add for android devices
+TODO app for android devices
