@@ -3,5 +3,5 @@
 
 Todo app for android devices
 
-##License
+### License
 [Licensed under the MIT license](LICENSE)
