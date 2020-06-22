@@ -6,11 +6,12 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
+import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.synthetic.main.note.view.*
 
 class NoteHolder(
     v: View
-) : RecyclerView.ViewHolder(v), View.OnClickListener {
+) : ChildViewHolder(v), View.OnClickListener {
     private var msg: String? = null
     private var view = v
     private var index: Int = -1

@@ -21,10 +21,15 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity() {
 
     var notes: MutableList<Note> = mutableListOf()
+
+    var importantNotes = NoteTag("Important", "imp", mutableListOf())
+    var completedNotes = NoteTag("Completed", "com", mutableListOf())
+    var uncompletedNotes = NoteTag("Uncompleted", "unc", mutableListOf())
+
+    var noteTags: MutableList<NoteTag> = mutableListOf(importantNotes, uncompletedNotes, completedNotes)
+
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var noteAdapter: NoteAdapter
-    private val lastVisibleItemPosition: Int
-        get() = linearLayoutManager.findLastVisibleItemPosition()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +46,12 @@ class MainActivity : AppCompatActivity() {
         notes = Note.getNotes(this)
         Log.d("NOTES", notes.size.toString())
 
-        noteAdapter = NoteAdapter(notes)
+        for (note in notes){
+            if (note.completed) noteTags[2].items.add(note)
+            else noteTags[1].items.add(note)
+        }
+
+        noteAdapter = NoteAdapter(noteTags)
         linearLayoutManager = LinearLayoutManager(this)
         notesLv.layoutManager = linearLayoutManager
         notesLv.adapter = noteAdapter
@@ -73,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                         ItemTouchHelper.LEFT -> {
                             val deletedNote = notes.removeAt(pos)
                             noteAdapter.notifyItemRemoved(pos)
-                            Snackbar.make(notesLv, deletedNote.msg, Snackbar.LENGTH_LONG)
+                            Snackbar.make(notesLv, deletedNote.msg.toString(), Snackbar.LENGTH_LONG)
                                 .setAction("UNDO") {
                                     notes.add(pos, deletedNote)
                                     Log.d("Swiped", notes[pos].msg)
@@ -139,7 +149,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 1) {
             runOnUiThread {
                 notes.add(Note(noteMsg, false))
-                noteAdapter.notifyItemInserted(notes.lastIndex)
+                noteTags[1].items.add(notes[notes.lastIndex])
+                //noteAdapter.notifyDataSetChanged()
+                noteAdapter.notifyItemChanged(1)
             }
             Log.d("NOTE ADDED", noteMsg)
         } else if (requestCode == 2){

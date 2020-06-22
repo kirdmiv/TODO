@@ -1,33 +1,46 @@
 package com.kirdmiv.todo
 
-import android.content.Context
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.CheckBox
-import android.widget.RadioButton
-import android.widget.TextView
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
-import androidx.recyclerview.widget.RecyclerView
+import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 
-class NoteAdapter (
-        private var notes: MutableList<Note>
-) : RecyclerView.Adapter<NoteHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
-        val inflatedView = parent.inflate(R.layout.note, false)
-        return NoteHolder(inflatedView)
+class NoteAdapter(
+    groups: MutableList<out ExpandableGroup<*>>
+) : ExpandableRecyclerViewAdapter<TagHolder, NoteHolder>(groups) {
+    override fun onCreateGroupViewHolder(parent: ViewGroup?, viewType: Int): TagHolder {
+        val view: View = LayoutInflater.from(parent?.context).inflate(
+            R.layout.list_item_tag,
+            parent,
+            false
+        )
+        return TagHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return notes.size
+    override fun onCreateChildViewHolder(parent: ViewGroup?, viewType: Int): NoteHolder {
+        val view: View = LayoutInflater.from(parent?.context).inflate(
+            R.layout.note,
+            parent,
+            false
+        )
+        return NoteHolder(view)
     }
 
-    override fun onBindViewHolder(holder: NoteHolder, position: Int) {
-        holder.bindNote(notes[position], position)
+    override fun onBindChildViewHolder(
+        holder: NoteHolder?,
+        flatPosition: Int,
+        group: ExpandableGroup<*>?,
+        childIndex: Int
+    ) {
+        holder?.bindNote((group as NoteTag).items[childIndex], childIndex)
     }
 
+    override fun onBindGroupViewHolder(
+        holder: TagHolder?,
+        flatPosition: Int,
+        group: ExpandableGroup<*>?
+    ) {
+        holder?.setTitle(group)
+    }
 }

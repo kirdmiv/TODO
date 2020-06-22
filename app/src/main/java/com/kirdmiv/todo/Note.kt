@@ -1,20 +1,44 @@
 package com.kirdmiv.todo
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import java.io.File
 import java.io.InputStream
-import kotlin.collections.emptyList as emptyList
 
 class Note(
-    var msg: String,
+    var msg: String?,
     var completed: Boolean
-) {
+) : Parcelable {
 
-    companion object {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readByte() != 0.toByte()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(msg)
+        parcel.writeByte(if (completed) 1 else 0)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Note> {
+        override fun createFromParcel(parcel: Parcel): Note {
+            return Note(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Note?> {
+            return arrayOfNulls(size)
+        }
+
         fun saveNotes(context: Context, notes: MutableList<Note>, fileName: String = "notes.json") {
             val path = context.filesDir
             val file = File(path, fileName)
