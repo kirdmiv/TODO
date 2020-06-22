@@ -11,11 +11,11 @@ import java.io.File
 import java.io.InputStream
 
 class Note(
-    var msg: String?,
-    var completed: Boolean,
-    var color: Int,
-    var title: String?,
-    var tag: String?
+    var msg: String? = "",
+    var completed: Boolean = false,
+    var color: Int = 0,
+    var title: String? = "",
+    var tag: String? = "Uncompleted"
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(

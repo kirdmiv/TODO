@@ -12,23 +12,26 @@ import kotlinx.android.synthetic.main.note.view.*
 class NoteHolder(
     v: View
 ) : ChildViewHolder(v), View.OnClickListener {
-    private var msg: String? = null
+    private var note = Note()
     private var view = v
-    private var index: Int = -1
+    var index: Int = -1
+    var tag: String = ""
 
     override fun onClick(p0: View?) {
         Log.d("click", index.toString())
         val context = itemView.context
         val editNoteIntent = Intent(context, AddNoteActivity::class.java)
-        editNoteIntent.putExtra(MSG_KEY, msg)
+        editNoteIntent.putExtra(NOTE_KEY, Note.toJson(note))
         editNoteIntent.putExtra(POS_KEY, index)
+        editNoteIntent.putExtra(TAG_KEY, tag)
         (context as Activity).startActivityForResult(editNoteIntent, 2)
     }
 
-    fun bindNote(note: Note, pos: Int){
-        this.msg = note.msg
-        view.noteTv.text = msg
+    fun bindNote(note: Note, pos: Int, tag: String){
+        this.note = note
+        view.noteTv.text = note.msg
         this.index = pos
+        this.tag = tag
     }
 
     init {
@@ -36,7 +39,8 @@ class NoteHolder(
     }
 
     companion object {
-        val MSG_KEY = "NOTE_MSG"
-        val POS_KEY = "NOTE_POS"
+        const val NOTE_KEY = "NOTE"
+        const val POS_KEY = "POS"
+        const val TAG_KEY = "TAG"
     }
 }

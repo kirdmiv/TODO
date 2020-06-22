@@ -1,5 +1,6 @@
 package com.kirdmiv.todo
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +34,10 @@ class NoteAdapter(
         group: ExpandableGroup<*>?,
         childIndex: Int
     ) {
-        holder?.bindNote((group as NoteTag).items[childIndex], childIndex)
+        //Log.d("FLAT", flatPosition.toString())
+        //Log.d("NOTFLAT", childIndex.toString())
+
+        holder?.bindNote((group as NoteTag).items[childIndex], childIndex, (group as NoteTag).noteTag)
     }
 
     override fun onBindGroupViewHolder(
