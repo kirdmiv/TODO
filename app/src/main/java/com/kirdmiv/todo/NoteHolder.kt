@@ -32,6 +32,7 @@ class NoteHolder(
         view.noteTv.text = note.msg
         this.index = pos
         this.tag = tag
+        view.setBackgroundColor(note.color)
     }
 
     init {

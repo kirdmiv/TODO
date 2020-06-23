@@ -13,4 +13,5 @@
     <!-- Strings in AddNoteActivity -->
     <string name="submit">Submit</string>
     <string name="note_hint">Write your note there</string>
+    <string name="title_hint">Title of TODO</string>
 </resources>

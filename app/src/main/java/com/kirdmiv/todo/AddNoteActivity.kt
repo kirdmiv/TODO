@@ -1,25 +1,55 @@
 package com.kirdmiv.todo
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.buildSpannedString
+import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.android.synthetic.main.activity_add_note.*
 
 class AddNoteActivity : AppCompatActivity() {
     private var note = Note()
+    private var colors: IntArray = intArrayOf()
+    private var curColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
 
+        colors = intArrayOf(
+            ResourcesCompat.getColor(resources, R.color.white, null),
+            ContextCompat.getColor(applicationContext, R.color.red),
+            ContextCompat.getColor(applicationContext, R.color.green),
+            ContextCompat.getColor(applicationContext, R.color.blue),
+            ContextCompat.getColor(applicationContext, R.color.cyan),
+            ContextCompat.getColor(applicationContext, R.color.yellow),
+            ContextCompat.getColor(applicationContext, R.color.purple))
+
+        colorB.setBackgroundColor(colors[0])
+        curColor = colors[0]
+        colorB.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
+
         if (intent.extras != null && intent.extras!!.containsKey(NoteHolder.NOTE_KEY))
             note = Note.fromJson(intent.getStringExtra(NoteHolder.NOTE_KEY))
 
         noteEt.text = SpannableStringBuilder(note.msg)
+
+        colorB.setOnClickListener {
+            ColorSheet().colorPicker(
+                colors = colors,
+                selectedColor = ResourcesCompat.getColor(resources, R.color.white, null),
+                listener = { color ->
+                    colorB.setBackgroundColor(color)
+                    curColor = color
+                })
+                .show(supportFragmentManager)
+        }
 
         submitBtn.setOnClickListener {
             collectNote()
@@ -38,6 +68,7 @@ class AddNoteActivity : AppCompatActivity() {
 
     private fun collectNote(){
         note.msg = noteEt.text.toString().trim()
+        note.color = curColor
     }
 
     companion object {
