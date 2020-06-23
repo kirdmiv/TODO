@@ -78,23 +78,26 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d("POS AND TAG", "$pos $tag")
 
-                    var nt: Note = Note()
-                    for (ntg in noteTags){
-                        if (ntg.noteTag == tag){
-                            nt = ntg.items.removeAt(pos)
-                            break
-                        }
-                    }
+//                    var nt: Note = Note()
+//                    for (ntg in noteTags){
+//                        if (ntg.noteTag == tag){
+//                            nt = ntg.items.removeAt(pos)
+//                            break
+//                        }
+//                    }
+                    val nt: Note = removeNote(tag, pos)
 
                     when (direction){
                         ItemTouchHelper.RIGHT -> {
                             nt.completed = true
-                            for (ntg in noteTags){
-                                if (ntg.noteTag == "Completed"){
-                                    ntg.items.add(nt)
-                                    break
-                                }
-                            }
+                            nt.tag = "Completed"
+                            insertNote(nt, -1)
+//                            for (ntg in noteTags){
+//                                if (ntg.noteTag == "Completed"){
+//                                    ntg.items.add(nt)
+//                                    break
+//                                }
+//                            }
                             Log.d("Swiped", "+")
                             //noteAdapter.notifyItemChanged(pos)
                             noteAdapter.notifyDataSetChanged()
@@ -103,12 +106,13 @@ class MainActivity : AppCompatActivity() {
                             noteAdapter.notifyDataSetChanged()
                             Snackbar.make(notesLv, nt.msg.toString(), Snackbar.LENGTH_LONG)
                                 .setAction("UNDO") {
-                                    for (ntg in noteTags){
-                                        if (ntg.noteTag == tag){
-                                            ntg.items.add(pos, nt)
-                                            break
-                                        }
-                                    }
+                                    insertNote(nt, pos)
+//                                    for (ntg in noteTags){
+//                                        if (ntg.noteTag == tag){
+//                                            ntg.items.add(pos, nt)
+//                                            break
+//                                        }
+//                                    }
                                     Log.d("Swiped", nt.msg)
                                     noteAdapter.notifyDataSetChanged()
                                 }.show()
@@ -165,6 +169,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+
         }
     }
 
@@ -177,12 +182,13 @@ class MainActivity : AppCompatActivity() {
         val note: Note = Note.fromJson(noteData)
         if (requestCode == 1) {
             runOnUiThread {
-                for (ntg in noteTags){
-                    if (ntg.noteTag == note.tag){
-                        ntg.items.add(note)
-                        break
-                    }
-                }
+                insertNote(note, -1)
+//                for (ntg in noteTags){
+//                    if (ntg.noteTag == note.tag){
+//                        ntg.items.add(note)
+//                        break
+//                    }
+//                }
                 //notes.add(Note(note.msg, false))
                 //noteTags[1].items.add(notes[notes.lastIndex])
                 noteAdapter.notifyDataSetChanged()
@@ -193,18 +199,41 @@ class MainActivity : AppCompatActivity() {
             val pos: Int = data.getIntExtra(AddNoteActivity.POS_KEY, 0)
             val noteTg: String = data.getStringExtra(AddNoteActivity.TAG_KEY)
             runOnUiThread {
-                for (ntg in noteTags){
-                    if (ntg.noteTag == noteTg){
-                        ntg.items.removeAt(pos)
-                    }
-                    if (ntg.noteTag == note.tag){
-                        ntg.items.add(note)
-                    }
-                }
+                insertNote(note, -1)
+                removeNote(noteTg, pos)
+//                for (ntg in noteTags){
+//                    if (ntg.noteTag == noteTg){
+//                        ntg.items.removeAt(pos)
+//                    }
+//                    if (ntg.noteTag == note.tag){
+//                        ntg.items.add(note)
+//                    }
+//                }
                 noteAdapter.notifyDataSetChanged()
             }
             Log.d("NOTE CHANGED", pos.toString())
         }
+    }
+
+    private fun insertNote(note: Note, pos: Int){
+        for (ntg in noteTags){
+            if (ntg.noteTag == note.tag){
+                if (pos > -1)
+                    ntg.items.add(pos, note)
+                else
+                    ntg.items.add(note)
+                return
+            }
+        }
+    }
+
+    private fun removeNote(noteTg: String, pos: Int): Note {
+        for (ntg in noteTags){
+            if (ntg.noteTag == noteTg){
+                return ntg.items.removeAt(pos)
+            }
+        }
+        return Note()
     }
 
     override fun onDestroy() {

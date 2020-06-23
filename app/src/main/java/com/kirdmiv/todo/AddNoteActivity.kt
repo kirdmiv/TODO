@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.buildSpannedString
@@ -17,6 +18,7 @@ class AddNoteActivity : AppCompatActivity() {
     private var note = Note()
     private var colors: IntArray = intArrayOf()
     private var curColor: Int = 0
+    private val tags: Array<String> = arrayOf("Important", "Uncompleted", "Completed")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +53,8 @@ class AddNoteActivity : AppCompatActivity() {
                 .show(supportFragmentManager)
         }
 
+        tagField.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tags))
+
         submitBtn.setOnClickListener {
             collectNote()
             if (note.msg != null && note.msg!!.isNotBlank()){
@@ -69,6 +73,10 @@ class AddNoteActivity : AppCompatActivity() {
     private fun collectNote(){
         note.msg = noteEt.text.toString().trim()
         note.color = curColor
+        note.tag = tagField.text.toString().trim()
+        if (note.tag!!.isBlank()) {
+            note.tag = R.string.default_text.toString()
+        }
     }
 
     companion object {
