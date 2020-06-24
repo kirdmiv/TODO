@@ -1,16 +1,16 @@
 package com.kirdmiv.todo
 
-import android.app.Activity
+import android.app.*
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.SpannableStringBuilder
-import android.view.View
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.text.buildSpannedString
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.android.synthetic.main.activity_add_note.*
 
@@ -58,6 +58,8 @@ class AddNoteActivity : AppCompatActivity() {
         submitBtn.setOnClickListener {
             collectNote()
             if (note.msg != null && note.msg!!.isNotBlank()){
+                createNotification(this)
+
                 val pos = intent.getIntExtra(NoteHolder.POS_KEY, 0)
                 val noteTg = intent.getStringExtra(NoteHolder.TAG_KEY)
                 val intent = Intent()
@@ -68,6 +70,37 @@ class AddNoteActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun createNotification(context: Context) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val pendingActivity = PendingIntent.getActivity(this, 0, intent, 0)
+
+        val notificationBuilder = NotificationCompat.Builder(this, App.CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_baseline_notification_important_24)
+            .setContentTitle("TODO ${note.tag}")
+            .setContentText(note.msg)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingActivity)
+            .setAutoCancel(true)
+
+        val notification: Notification = notificationBuilder.build()
+
+        val notificationIntent = Intent(context, NotificationPublisher::class.java)
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 54)
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            54,
+            notificationIntent,
+            0
+        )
+
+        val time = SystemClock.elapsedRealtime() + 10000
+        val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, pendingIntent)
     }
 
     private fun collectNote(){
