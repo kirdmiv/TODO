@@ -242,9 +242,14 @@ class MainActivity : AppCompatActivity() {
         return Note()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Note.saveNotes(this, notes)
+    override fun onPause() {
+        super.onPause()
+        NoteFactory.saveNotes(this, noteTags)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        NoteFactory.saveNotes(this, noteTags)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

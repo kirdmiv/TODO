@@ -15,7 +15,8 @@ class Note(
     var completed: Boolean = false,
     var color: Int = -1,
     var title: String? = "",
-    var tag: String? = "Uncompleted"
+    var tag: String? = "Uncompleted",
+    var notificationId: Int = 0
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(

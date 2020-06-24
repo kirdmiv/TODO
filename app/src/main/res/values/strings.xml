@@ -15,4 +15,5 @@
     <string name="note_hint">Write your note there</string>
     <string name="title_hint">Title of TODO</string>
     <string name="default_text">Uncompleted</string>
+    <string name="notify">Notify?</string>
 </resources>

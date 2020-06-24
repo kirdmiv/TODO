@@ -20,6 +20,7 @@ class App : Application() {
     }
 
     companion object {
-        const val CHANNEL_ID: String = "main todo channel"
+        const val CHANNEL_ID: String = "main_todo_channel"
+        const val NOTIFICATION_PREFERENCES = "notification_preferenses_com_kirdmiv_todo"
     }
 }

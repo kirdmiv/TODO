@@ -1,24 +1,35 @@
 package com.kirdmiv.todo
 
+import android.annotation.SuppressLint
 import android.app.*
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.SpannableStringBuilder
+import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.FragmentActivity
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.android.synthetic.main.activity_add_note.*
+import java.util.*
+
 
 class AddNoteActivity : AppCompatActivity() {
     private var note = Note()
     private var colors: IntArray = intArrayOf()
     private var curColor: Int = 0
     private val tags: Array<String> = arrayOf("Important", "Uncompleted", "Completed")
+    private val date: Calendar = Calendar.getInstance()
+    private var checked: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +66,42 @@ class AddNoteActivity : AppCompatActivity() {
 
         tagField.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tags))
 
+        dateTv.text = "${date[Calendar.MONTH] + 1}/${date[Calendar.DAY_OF_MONTH]}/${date[Calendar.YEAR]}"
+        timeTv.text = "${date[Calendar.HOUR]}:${date[Calendar.MINUTE]} ${getAMPM()}"
+
+        checked = false
+        notifyCb.setOnClickListener {
+            if (notifyCb.isChecked) {
+                dateTv.visibility = View.VISIBLE
+                timeTv.visibility = View.VISIBLE
+                if (!checked) {
+                    setTime(this)
+                    setDate(this)
+                }
+                checked = true
+            } else {
+                dateTv.visibility = View.INVISIBLE
+                timeTv.visibility = View.INVISIBLE
+            }
+        }
+
+        dateTv.setOnClickListener {
+            if (notifyCb.isChecked) {
+                setDate(this)
+            }
+        }
+
+        timeTv.setOnClickListener {
+            if (notifyCb.isChecked) {
+                setTime(this)
+            }
+        }
+
         submitBtn.setOnClickListener {
             collectNote()
             if (note.msg != null && note.msg!!.isNotBlank()){
-                createNotification(this)
+                if (notifyCb.isChecked)
+                    createNotification(this)
 
                 val pos = intent.getIntExtra(NoteHolder.POS_KEY, 0)
                 val noteTg = intent.getStringExtra(NoteHolder.TAG_KEY)
@@ -72,7 +115,25 @@ class AddNoteActivity : AppCompatActivity() {
         }
     }
 
+    private fun getAMPM() : String{
+        if (date[Calendar.AM_PM] == Calendar.AM) return "AM"
+        return "PM"
+    }
+
+    private fun getNotificationId() : Int {
+        if (note.notificationId != 0) return note.notificationId
+        val sharedPref = getSharedPreferences(App.NOTIFICATION_PREFERENCES, Context.MODE_PRIVATE)
+        val curId: Int = sharedPref.getInt(NOTIFICATION_ID, 0) + 1
+        sharedPref.edit().putInt(NOTIFICATION_ID, curId).apply()
+        return curId
+    }
+
     private fun createNotification(context: Context) {
+        val notificationId = getNotificationId()
+        note.notificationId = notificationId
+        val time = SystemClock.elapsedRealtime() + (date.timeInMillis - Calendar.getInstance().timeInMillis)
+        Log.d("NOTIFICATION_ID", notificationId.toString())
+
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         }
@@ -89,16 +150,18 @@ class AddNoteActivity : AppCompatActivity() {
         val notification: Notification = notificationBuilder.build()
 
         val notificationIntent = Intent(context, NotificationPublisher::class.java)
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 54)
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, notificationId)
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            54,
+            notificationId,
             notificationIntent,
             0
         )
 
-        val time = SystemClock.elapsedRealtime() + 10000
+//        Log.d("Current time", SystemClock.elapsedRealtime().toString())
+//        Log.d("Current time", Calendar.getInstance().timeInMillis.toString())
+//        Log.d("Picked time", time.toString())
         val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, pendingIntent)
     }
@@ -112,9 +175,39 @@ class AddNoteActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun setDate(context: Context){
+        DatePickerDialog(
+            context,
+            OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                date.set(year, monthOfYear, dayOfMonth)
+                dateTv.text = "${date[Calendar.MONTH] + 1}/${date[Calendar.DAY_OF_MONTH]}/${date[Calendar.YEAR]}"
+            },
+            date[Calendar.YEAR],
+            date[Calendar.MONTH],
+            date[Calendar.DATE]
+        ).show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setTime(context: Context){
+        TimePickerDialog(
+            context,
+            OnTimeSetListener { _, hourOfDay, minute ->
+                date[Calendar.HOUR_OF_DAY] = hourOfDay
+                date[Calendar.MINUTE] = minute
+                timeTv.text = "${date[Calendar.HOUR]}:${date[Calendar.MINUTE]} ${getAMPM()}"
+            },
+            date[Calendar.HOUR_OF_DAY],
+            date[Calendar.MINUTE],
+            true
+        ).show()
+    }
+
     companion object {
         const val NOTE_KEY = "NOTE_KEY"
         const val POS_KEY = "POS_KEY"
         const val TAG_KEY = "TAG_KEY"
+        const val NOTIFICATION_ID = "notification_id_for_main_channel"
     }
 }
