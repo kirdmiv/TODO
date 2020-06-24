@@ -10,11 +10,13 @@ import java.io.InputStream
 
 class NoteFactory {
     companion object {
-        fun saveNotes(context: Context, notes: MutableList<NoteTag>, fileName: String = "notes.json") {
+        fun saveNotes(
+            context: Context,
+            notes: MutableList<NoteTag>,
+            fileName: String = "notes.json"
+        ) {
             val path = context.filesDir
             val file = File(path, fileName)
-
-            Log.d("FILE", file.absolutePath)
 
             val gsonPretty = GsonBuilder().setPrettyPrinting().create()
 
@@ -23,14 +25,13 @@ class NoteFactory {
             Log.d("SAVED NOTES", jsonNotesListPretty)
         }
 
-        fun getNotes(context: Context, fileName: String = "notes.json") : MutableList<NoteTag> {
-            var json: String = ""
+        fun getNotes(context: Context, fileName: String = "notes.json"): MutableList<NoteTag> {
+            val json: String
             try {
-                val  inputStream: InputStream = File(context.filesDir, fileName).inputStream()
-                json = inputStream.bufferedReader().use{it.readText()}
+                val inputStream: InputStream = File(context.filesDir, fileName).inputStream()
+                json = inputStream.bufferedReader().use { it.readText() }
                 inputStream.close()
             } catch (ex: Exception) {
-                Log.d("EXydsydsb", "sad")
                 ex.printStackTrace()
                 val importantNotes = NoteTag("Important", "imp", mutableListOf())
                 val completedNotes = NoteTag("Completed", "com", mutableListOf())
@@ -38,9 +39,10 @@ class NoteFactory {
 
                 return mutableListOf(importantNotes, uncompletedNotes, completedNotes)
             }
-            Log.d("dflsDATA GOT FROM JSON", json + "sss")
+            Log.d("DATA GOT FROM JSON", json + "sss")
             val jsonArray = Gson().fromJson(json, JsonArray::class.java)
-            return jsonArray.map { it.toString() }.map { Gson().fromJson(it, NoteTag::class.java) }.toMutableList()
+            return jsonArray.map { it.toString() }.map { Gson().fromJson(it, NoteTag::class.java) }
+                .toMutableList()
         }
     }
 }

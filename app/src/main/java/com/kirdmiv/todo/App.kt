@@ -9,12 +9,10 @@ class App : Application() {
         super.onCreate()
 
         val name = "TODO channel"
-        val descriptionText = "TODO notifications com.kirdmiv.todo"
+        val descriptionText = "TODO notifications com.kirdmiv.todo https://github.com/kirdmiv/TODO"
         val importance = NotificationManager.IMPORTANCE_HIGH
         val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
         mChannel.description = descriptionText
-        // Register the channel with the system; you can't change the importance
-        // or other notification behaviors after this
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
     }

@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.View
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.synthetic.main.note.view.*
 
@@ -27,7 +25,7 @@ class NoteHolder(
         (context as Activity).startActivityForResult(editNoteIntent, 2)
     }
 
-    fun bindNote(note: Note, pos: Int, tag: String){
+    fun bindNote(note: Note, pos: Int, tag: String) {
         this.note = note
         view.noteTv.text = note.msg
         this.index = pos

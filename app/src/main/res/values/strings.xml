@@ -16,4 +16,9 @@
     <string name="title_hint">Title of TODO</string>
     <string name="default_text">Uncompleted</string>
     <string name="notify">Notify?</string>
+    <string name="your_note">Your note</string>
+    <string name="arrow">arrow</string>
+    <string name="custom_tag_here">Custom tag here</string>
+    <string name="tap_to_set_date">Tap to set date</string>
+    <string name="tap_to_set_time">Tap to set time</string>
 </resources>

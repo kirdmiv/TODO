@@ -5,107 +5,89 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddNoteActivity">
-    <!--
-    <EditText
-        android:id="@+id/titleEt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/noteEt"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:hint="@string/title_hint"
-        android:textSize="20sp" />
--->
+
     <EditText
         android:id="@+id/noteEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:hint="@string/note_hint"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <AutoCompleteTextView
         android:id="@+id/tagField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/noteEt"
-        app:layout_constraintStart_toStartOf="parent"
-        android:hint="@string/default_text"
         android:layout_marginStart="10dp"
-        />
+        android:hint="@string/default_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/noteEt" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/colorB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tagField"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/pick_a_color"
-        android:background="@color/white"
-        app:strokeColor="@color/black"
-        app:strokeWidth="2dp"
-        android:textSize="20sp"
         android:layout_marginStart="10dp"
-        />
+        android:background="@color/white"
+        android:text="@string/pick_a_color"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tagField"
+        app:strokeColor="@color/black"
+        app:strokeWidth="2dp" />
 
     <Button
         android:id="@+id/submitBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/timeTv"
-        app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/submit"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeTv" />
 
     <TextView
         android:id="@+id/notifyTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/colorB"
-        app:layout_constraintEnd_toStartOf="@id/notifyCb"
-        app:layout_constraintBottom_toBottomOf="@id/notifyCb"
+        android:layout_marginStart="10dp"
         android:text="@string/notify"
         android:textSize="20sp"
-        android:layout_marginStart="10dp"/>
+        app:layout_constraintBottom_toBottomOf="@id/notifyCb"
+        app:layout_constraintEnd_toStartOf="@id/notifyCb"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/colorB" />
 
     <CheckBox
         android:id="@+id/notifyCb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         app:layout_constraintStart_toEndOf="@id/notifyTv"
-        app:layout_constraintTop_toBottomOf="@id/colorB"
-        android:layout_marginStart="10dp"/>
+        app:layout_constraintTop_toBottomOf="@id/colorB" />
 
     <TextView
         android:id="@+id/dateTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/notifyCb"
-        android:hint="Tap to set date"
         android:layout_marginStart="10dp"
+        android:hint="@string/tap_to_set_date"
         android:textSize="20sp"
         android:visibility="invisible"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notifyCb" />
 
     <TextView
         android:id="@+id/timeTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dateTv"
-        android:hint="Tap to set time"
         android:layout_marginStart="10dp"
+        android:hint="@string/tap_to_set_time"
         android:textSize="20sp"
         android:visibility="invisible"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dateTv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,14 +20,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
-
-    var notes: MutableList<Note> = mutableListOf()
-
-    var importantNotes = NoteTag("Important", "imp", mutableListOf())
-    var completedNotes = NoteTag("Completed", "com", mutableListOf())
-    var uncompletedNotes = NoteTag("Uncompleted", "unc", mutableListOf())
-
-    var noteTags: MutableList<NoteTag> = mutableListOf(importantNotes, uncompletedNotes, completedNotes)
+    var noteTags: MutableList<NoteTag> = mutableListOf()
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var noteAdapter: NoteAdapter
@@ -37,20 +30,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            val intent: Intent = Intent(this, AddNoteActivity::class.java)
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            val intent = Intent(this, AddNoteActivity::class.java)
             startActivityForResult(intent, 1)
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
         }
-
-//        notes = Note.getNotes(this)
-//        Log.d("NOTES", notes.size.toString())
-//
-//        for (note in notes){
-//            if (note.completed) noteTags[2].items.add(note)
-//            else noteTags[1].items.add(note)
-//        }
 
         noteTags = NoteFactory.getNotes(this)
 
@@ -76,32 +59,16 @@ class MainActivity : AppCompatActivity() {
                     direction: Int
                 ) {
                     val pos: Int = (viewHolder as NoteHolder).index
-                    val tag: String = (viewHolder as NoteHolder).tag
+                    val tag: String = viewHolder.tag
 
                     Log.d("POS AND TAG", "$pos $tag")
-
-//                    var nt: Note = Note()
-//                    for (ntg in noteTags){
-//                        if (ntg.noteTag == tag){
-//                            nt = ntg.items.removeAt(pos)
-//                            break
-//                        }
-//                    }
                     val nt: Note = removeNote(tag, pos)
 
-                    when (direction){
+                    when (direction) {
                         ItemTouchHelper.RIGHT -> {
                             nt.completed = true
                             nt.tag = "Completed"
                             insertNote(nt, -1)
-//                            for (ntg in noteTags){
-//                                if (ntg.noteTag == "Completed"){
-//                                    ntg.items.add(nt)
-//                                    break
-//                                }
-//                            }
-                            Log.d("Swiped", "+")
-                            //noteAdapter.notifyItemChanged(pos)
                             noteAdapter.notifyDataSetChanged()
                         }
                         ItemTouchHelper.LEFT -> {
@@ -109,13 +76,6 @@ class MainActivity : AppCompatActivity() {
                             Snackbar.make(notesLv, nt.msg.toString(), Snackbar.LENGTH_LONG)
                                 .setAction("UNDO") {
                                     insertNote(nt, pos)
-//                                    for (ntg in noteTags){
-//                                        if (ntg.noteTag == tag){
-//                                            ntg.items.add(pos, nt)
-//                                            break
-//                                        }
-//                                    }
-                                    Log.d("Swiped", nt.msg)
                                     noteAdapter.notifyDataSetChanged()
                                 }.show()
                         }
@@ -137,13 +97,31 @@ class MainActivity : AppCompatActivity() {
                     actionState: Int,
                     isCurrentlyActive: Boolean
                 ) {
-                    RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(applicationContext, R.color.bad))
+                    RecyclerViewSwipeDecorator.Builder(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                        .addSwipeLeftBackgroundColor(
+                            ContextCompat.getColor(
+                                applicationContext,
+                                R.color.bad
+                            )
+                        )
                         .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
-                        .addSwipeRightBackgroundColor(ContextCompat.getColor(applicationContext, R.color.good))
+                        .addSwipeRightBackgroundColor(
+                            ContextCompat.getColor(
+                                applicationContext,
+                                R.color.good
+                            )
+                        )
                         .addSwipeRightActionIcon(R.drawable.ic_baseline_check_24)
                         .create()
-                        .decorate();
+                        .decorate()
 
                     super.onChildDraw(
                         c,
@@ -156,19 +134,15 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             })
-            mIth.attachToRecyclerView(notesLv)
+        mIth.attachToRecyclerView(notesLv)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
@@ -176,53 +150,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data == null) return
-        Log.d("request code", requestCode.toString())
-        Log.d("result code", resultCode.toString())
         val noteData = data.getStringExtra(AddNoteActivity.NOTE_KEY) ?: return
         val note: Note = Note.fromJson(noteData)
         if (requestCode == 1) {
             runOnUiThread {
                 insertNote(note, -1)
-//                for (ntg in noteTags){
-//                    if (ntg.noteTag == note.tag){
-//                        ntg.items.add(note)
-//                        break
-//                    }
-//                }
-                //notes.add(Note(note.msg, false))
-                //noteTags[1].items.add(notes[notes.lastIndex])
                 noteAdapter.notifyDataSetChanged()
-                //noteAdapter.notifyItemChanged(1)
             }
-            Log.d("NOTE ADDED", note.msg)
-        } else if (requestCode == 2){
+        } else if (requestCode == 2) {
             val pos: Int = data.getIntExtra(AddNoteActivity.POS_KEY, 0)
             val noteTg: String = data.getStringExtra(AddNoteActivity.TAG_KEY)
             runOnUiThread {
                 insertNote(note, -1)
                 removeNote(noteTg, pos)
-//                for (ntg in noteTags){
-//                    if (ntg.noteTag == noteTg){
-//                        ntg.items.removeAt(pos)
-//                    }
-//                    if (ntg.noteTag == note.tag){
-//                        ntg.items.add(note)
-//                    }
-//                }
                 noteAdapter.notifyDataSetChanged()
             }
-            Log.d("NOTE CHANGED", pos.toString())
         }
-
         NoteFactory.saveNotes(applicationContext, noteTags)
     }
 
-    private fun insertNote(note: Note, pos: Int){
-        for (ntg in noteTags){
-            if (ntg.noteTag == note.tag){
+    private fun insertNote(note: Note, pos: Int) {
+        for (ntg in noteTags) {
+            if (ntg.noteTag == note.tag) {
                 if (pos > -1)
                     ntg.items.add(pos, note)
                 else
@@ -234,8 +187,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun removeNote(noteTg: String, pos: Int): Note {
-        for (ntg in noteTags){
-            if (ntg.noteTag == noteTg){
+        for (ntg in noteTags) {
+            if (ntg.noteTag == noteTg) {
                 return ntg.items.removeAt(pos)
             }
         }

@@ -3,14 +3,13 @@ package com.kirdmiv.todo
 import android.view.View
 import android.view.animation.Animation.RELATIVE_TO_SELF
 import android.view.animation.RotateAnimation
-import android.widget.TextView
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder
 import kotlinx.android.synthetic.main.list_item_tag.view.*
 
 
 class TagHolder(itemView: View) : GroupViewHolder(itemView) {
-    fun setTitle(group: ExpandableGroup<*>?){
+    fun setTitle(group: ExpandableGroup<*>?) {
         if (group is NoteTag) {
             itemView.tagTv.text = group.noteTag
         }
