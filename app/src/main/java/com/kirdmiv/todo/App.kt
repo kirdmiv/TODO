@@ -20,6 +20,6 @@ class App : Application() {
     }
 
     companion object {
-        val CHANNEL_ID: String = "main todo channel"
+        const val CHANNEL_ID: String = "main todo channel"
     }
 }
