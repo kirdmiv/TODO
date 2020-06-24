@@ -13,7 +13,7 @@ import java.io.InputStream
 class Note(
     var msg: String? = "",
     var completed: Boolean = false,
-    var color: Int = 0,
+    var color: Int = -1,
     var title: String? = "",
     var tag: String? = "Uncompleted"
 ) : Parcelable {

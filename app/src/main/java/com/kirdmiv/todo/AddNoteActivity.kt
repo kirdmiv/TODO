@@ -75,7 +75,7 @@ class AddNoteActivity : AppCompatActivity() {
         note.color = curColor
         note.tag = tagField.text.toString().trim()
         if (note.tag!!.isBlank()) {
-            note.tag = R.string.default_text.toString()
+            note.tag = getString(R.string.default_text)
         }
     }
 

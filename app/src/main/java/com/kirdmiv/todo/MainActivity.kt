@@ -44,13 +44,15 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
-        notes = Note.getNotes(this)
-        Log.d("NOTES", notes.size.toString())
+//        notes = Note.getNotes(this)
+//        Log.d("NOTES", notes.size.toString())
+//
+//        for (note in notes){
+//            if (note.completed) noteTags[2].items.add(note)
+//            else noteTags[1].items.add(note)
+//        }
 
-        for (note in notes){
-            if (note.completed) noteTags[2].items.add(note)
-            else noteTags[1].items.add(note)
-        }
+        noteTags = NoteFactory.getNotes(this)
 
         noteAdapter = NoteAdapter(noteTags)
         linearLayoutManager = LinearLayoutManager(this)
@@ -118,6 +120,7 @@ class MainActivity : AppCompatActivity() {
                                 }.show()
                         }
                     }
+                    NoteFactory.saveNotes(applicationContext, noteTags)
                 }
 
                 override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: ViewHolder): Int {
@@ -213,6 +216,8 @@ class MainActivity : AppCompatActivity() {
             }
             Log.d("NOTE CHANGED", pos.toString())
         }
+
+        NoteFactory.saveNotes(applicationContext, noteTags)
     }
 
     private fun insertNote(note: Note, pos: Int){
@@ -225,6 +230,7 @@ class MainActivity : AppCompatActivity() {
                 return
             }
         }
+        Log.d("UNEXPECTED NOTE", Note.toJson(note))
     }
 
     private fun removeNote(noteTg: String, pos: Int): Note {
